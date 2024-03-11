@@ -1,36 +1,39 @@
 pipeline {
-  environment {
-    registry = "umairshah379/mydockerrepo"
-    registryCredential = 'umairshah379'
-    dockerImage = ''
-  }
-  agent any
-  stages {
-    stage('Cloning Git') {
-      steps {
-        checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: '83212972-e780-43ec-8920-1c638e7b7296', url: 'https://github.com/umairshah124/doc_jenk.git']])
-      }
+    agent any
+    tools{
+        maven 'maven_3_5_0'
     }
-    stage('Building image') {
-      steps{
-        script {
-          dockerImage = docker.build registry + ":$BUILD_NUMBER"
+    stages{
+        stage('Build Maven'){
+            steps{
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/umairshah124/doc_jenk.git']])
+                sh 'mvn clean install'
+            }
         }
-      }
-    }
-    stage('Deploy Image') {
-      steps{
-        script {
-          docker.withRegistry( '', registryCredential ) {
-            dockerImage.push()
-          }
+        stage('Build docker image'){
+            steps{
+                script{
+                    sh 'docker build -t javatechie/devops-integration .'
+                }
+            }
         }
-      }
+        stage('Push image to Hub'){
+            steps{
+                script{
+                   withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
+                   sh 'docker login -u javatechie -p ${dockerhubpwd}'
+
+}
+                   sh 'docker push javatechie/devops-integration'
+                }
+            }
+        }
+        stage('Deploy to k8s'){
+            steps{
+                script{
+                    kubernetesDeploy (configs: 'deploymentservice.yaml',kubeconfigId: 'k8sconfigpwd')
+                }
+            }
+        }
     }
-    stage('Remove Unused docker image') {
-      steps{
-        sh "docker rmi $registry:$BUILD_NUMBER"
-      }
-    }
-  }
 }
