@@ -1,6 +1,6 @@
 pipeline {
   environment {
-    imagename = "umairshah379/mydockerrepo"
+    registry = "umairshah379/mydockerrepo"
     registryCredential = 'umairshah379'
     dockerImage = ''
   }
@@ -15,7 +15,7 @@ pipeline {
     stage('Building image') {
       steps{
         script {
-          dockerImage = docker.build myapp
+          dockerImage = docker.build registry + ":$BUILD_NUMBER"
         }
       }
     }
@@ -24,7 +24,7 @@ pipeline {
         script {
           docker.withRegistry( '', registryCredential ) {
             dockerImage.push("$BUILD_NUMBER")
-             dockerImage.push('myapp')
+             dockerImage.push
 
           }
         }
