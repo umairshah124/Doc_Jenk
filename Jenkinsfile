@@ -12,7 +12,6 @@ git 'https://github.com/umairshah124/doc_jenk.git'
         
       }
 }
-    }
     stage('Building image') {
       steps{
         script {
@@ -32,4 +31,5 @@ git 'https://github.com/umairshah124/doc_jenk.git'
       }
     }
   }
+}
 
