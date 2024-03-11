@@ -34,7 +34,7 @@ pipeline {
                     withSonarQubeEnv('sonar-server') {
                         sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Java-WebApp \
                         -Dsonar.java.binaries=. \
-                        -Dsonar.projectKey=Java-WebApp '''
+                        -Dsonar.projectKey=Java-myApp '''
     
                 }
             }
@@ -56,10 +56,10 @@ pipeline {
         stage('Docker Build & Push') {
             steps {
                    script {
-                       withDockerRegistry(credentialsId: 'b289dc43-2ede-4bd0-95e8-75ca26100d8d', toolName: 'docker') {
-                            sh "docker build -t webapp ."
-                            sh "docker tag webapp adijaiswal/webapp:latest"
-                            sh "docker push adijaiswal/webapp:latest "
+                       withDockerRegistry(credentialsId: 'umairshah379', toolName: 'docker') {
+                            sh "docker build -t myapp ."
+                            sh "docker tag myapp umairshah379/mydockerrepo:latest"
+                            sh "docker push umairshah379/mydockerrepo:latest "
                         }
                    } 
             }
@@ -67,7 +67,7 @@ pipeline {
         
         stage('Docker Image scan') {
             steps {
-                    sh "trivy image adijaiswal/webapp:latest "
+                    sh "trivy image umairshah379/mydockerrepo:latest "
             }
         }
         
