@@ -8,9 +8,8 @@ pipeline {
   stages {
     stage('Cloning Git') {
       steps {
-        git([url: 'https://github.com/umairshah124/doc_jenk.git', branch: 'master', credentialsId: 'umairshah379'])
-
-      }
+git 'https://github.com/umairshah124/doc_jenk.git'
+}
     }
     stage('Building image') {
       steps{
