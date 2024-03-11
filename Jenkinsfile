@@ -9,6 +9,10 @@ pipeline {
     stage('Cloning Git') {
       steps {
 git 'https://github.com/umairshah124/doc_jenk.git'
+        withCredentials([usernamePassword(credentialsId: 'umairshah379', username: 'umairshah379', password: 'imrankhan123')]) {
+        sh 'cf login some.awesome.url -u $USERNAME -p $PASSWORD'
+        }
+      }
 }
     }
     stage('Building image') {
